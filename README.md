@@ -1,6 +1,7 @@
 VBot
 ====
 Language C#
+License: CC0 1.0
 
 BOT for Wikidata and Wikipedia. Read and write on Wikidata and Wipipedia and hava a useful list generator to generate list of Wikipedia page and Wikidata entity.
 
