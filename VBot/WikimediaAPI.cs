@@ -143,7 +143,7 @@ namespace VBot
         /// Load pages 
         /// </summary>
         /// <param name="Pages">Title of the page, multiple pages must separated by |</param>
-        /// <returns>JSON string</returns>
+        /// <returns>JSON string of the pages</returns>
         /// <see cref="https://www.mediawiki.org/wiki/API:Query"/>
         public string LoadWP(string Pages)
         {

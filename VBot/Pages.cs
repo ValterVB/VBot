@@ -11,8 +11,7 @@ namespace VBot
 {
     public class RootWP
     {
-        public Query query { get; set; }
-        
+        public Query query { get; set; }   
     }
 
     public class Query
