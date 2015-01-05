@@ -30,7 +30,7 @@ namespace VBot
         {
             WebClient client = new WebClient();
             client.Headers.Add("user-agent", Version);
-            Stream data = client.OpenRead("http://wdq.wmflabs.org/api?q=" + HttpUtility.UrlEncode(WDQ));
+            Stream data = client.OpenRead("http://wdq.wmflabs.org/api?q=" + WDQ);
             StreamReader reader = new StreamReader(data);
             string result = reader.ReadToEnd();
             data.Close();

@@ -9,17 +9,27 @@ using Newtonsoft.Json;
 
 namespace VBot
 {
-    public class RootWP
+    public class Pages
     {
-        public Query query { get; set; }   
+        public Query query { get; set; }
     }
 
     public class Query
     {
-        public Dictionary<int, Pages> pages { get; set; }
+        public Dictionary<int, Page> pages { get; set; }
+        public string FirstPageText = "";
+        [OnDeserialized]
+        public void OnDeserialized(StreamingContext context)
+        {
+            foreach (KeyValuePair<int, Page> page in this.pages)
+            {
+                FirstPageText = page.Value.revisions[0].text;
+                break;
+            }
+        }
     }
 
-    public class Pages
+    public class Page
     {
         public string pageid { get; set; }
         public string ns { get; set; }

@@ -30,11 +30,61 @@ namespace VBot
         private void button1_Click(object sender, EventArgs e)
         {
             txtPageList.Text = "";
-            WDQExample();
+            CompleteExample();
             MessageBox.Show("Done");
         }
 
         #region Example
+
+
+        private void CompleteExample()
+        {
+            //Wikidata query
+            string strWDQ = "CLAIM[31:24862] AND CLAIM[57] AND BETWEEN[577,+00000001908-00-00T00:00:00Z,+00000001908-12-31T00:00:00Z]";
+            ListGenerator lg = new ListGenerator();
+            List<string> chunks = lg.WDQ(strWDQ, 50);
+
+            //Connection to Wikipedia
+            WikimediaAPI WP = new WikimediaAPI("https://it.wikipedia.org", User, Password);
+            Pages PageList = new Pages();
+            //Connection to Wikidata
+            WikimediaAPI WD = new WikimediaAPI("https://www.wikidata.org", User, Password);
+            Entities EntityList = new Entities();
+            Dictionary<string, string> Labels = new Dictionary<string, string>();
+
+            foreach (string list in chunks)
+            {
+                // Load all the entity of the chunk
+                string strJson = WD.LoadWD(list);
+                EntityList = new Entities();
+                EntityList = JsonConvert.DeserializeObject<Entities>(strJson, new DatavalueConverter());
+
+                foreach (KeyValuePair<string, Entity> entity in EntityList.entities)
+                {
+                    if (entity.Value.sitelinks.ContainsKey("itwiki"))
+                    {
+                        // Load Wikipage
+                        string Pages = WP.LoadWP(entity.Value.sitelinks["itwiki"].title);
+                        PageList = JsonConvert.DeserializeObject<Pages>(Pages, new DatavalueConverter());
+                     
+                        //Director from template
+                        string director = Utility.GetTemplateParameter(PageList.query.FirstPageText, "film","Regista").Replace("[","").Replace("]", "");
+                        Labels = new Dictionary<string, string>();
+                        if (director=="")
+                        {
+                            Labels.Add("en", "1908 short movie");
+                        }
+                        else
+                        {
+                            Labels.Add("en", "1908 short movie directed by " + director);
+                        }
+                        // Update Wikidata
+                        WD.EditEntity(entity.Value.id, null, Labels, null, null, null, "BOT: Update en label");
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Add Label, description, alias, sitelink, claim with qualifier and reference, all datatype.
         /// </summary>
@@ -531,10 +581,9 @@ namespace VBot
                     Tab += "| [[" + ld.item + "]] || " + ld.label + " || " + ld.description + " || " + ld.sitelink + Environment.NewLine ;
                 }
                 Tab += "|}";
-                //string res = WD.SavePage("User:ValterVBot/Labels and descriptions/" + lang, Tab, "Update");
+                string res = WD.SavePage("User:ValterVBot/Labels and descriptions/" + lang, Tab, "Update");
                 Console.Write("");
             }
-            //string res = WD.SavePage("Page", "Text");
             txtPageList.AppendText(DateTime.Now.ToLongTimeString() + Environment.NewLine);
         }
     }

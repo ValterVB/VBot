@@ -97,12 +97,14 @@ namespace VBot
         /// <param name="Text">Text with template</param>
         /// <param name="TemplateName">Name of template </param>
         /// <returns>Dictionary with parameter name, parameter value</returns>
-        public static Dictionary<string, string> GetTemplate(string Text, string TemplateName)
+        public static StringDictionary GetTemplate(string Text, string TemplateName)
         {
             Match match = Regex.Match(Text, @"{{\s*" + TemplateName, RegexOptions.IgnoreCase);
             int Bracket = 0;
             string template="";
-            Dictionary<string, string> Template = new Dictionary<string, string>();
+            //Dictionary<string, string> Template = new Dictionary<string, string>();
+            StringDictionary Template = new StringDictionary();
+
             if (match.Success)
             {
                 int start = match.Index;
@@ -126,7 +128,7 @@ namespace VBot
                             string[] split = fields[idx2].Split(new char[] { '=' }, 2);
                             if (split.Count() == 2)
                             {
-
+                                // TODO Check for double parameter
                                 Template.Add(split[0].Trim(), split[1].Trim());
                             }
                             else
@@ -141,6 +143,20 @@ namespace VBot
             return Template;
         }
 
+        public static string GetTemplateParameter(string Text, string TemplateName,string Parameter)
+        {
+            //Dictionary<string, string> template = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            StringDictionary template = new StringDictionary();
+            template = GetTemplate(Text, TemplateName);
+            if (template.ContainsKey(Parameter))
+            {
+                return template[Parameter];
+            }
+            else
+            {
+                return "";
+            }
+        }
         /// <summary>
         /// Delete piped from wikilink
         /// </summary>
