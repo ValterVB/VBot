@@ -149,7 +149,7 @@ namespace VBot
         public string LoadWP(string Pages)
         {
             string request = "";
-            request = "action=query&prop=pageprops|revisions&format=json&rvprop=content&titles=" + Pages;
+            request = "action=query&prop=pageprops|revisions&format=json&rvprop=content&titles=" + HttpUtility.UrlEncode(Pages);
             return PostRequest(this._URL + this._API, request);
         }
 

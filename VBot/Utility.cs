@@ -110,7 +110,7 @@ namespace VBot
                 int start = match.Index;
                 int end=0;
                 Bracket = 2;
-
+                int Cont = 0;
                 for (int idx = start+2; idx <= Text.Length; idx++)
                 {
                     if (Text[idx] == '}') {Bracket -= 1;}
@@ -123,17 +123,19 @@ namespace VBot
                         template = template.Remove(0, 2);
                         template = template.Remove(template.Length - 2, 2);
                         string[] fields = template.Split('|');
-                        for (int idx2 = 0;idx2 < fields.Count(); idx2++)
+                        for (int idx2 = 0; idx2 < fields.Count(); idx2++)
                         {
                             string[] split = fields[idx2].Split(new char[] { '=' }, 2);
                             if (split.Count() == 2)
                             {
                                 // TODO Check for double parameter
                                 Template.Add(split[0].Trim(), split[1].Trim());
+                                Cont += 1;
                             }
                             else
                             {
-                                Template.Add(split[0].Trim(), "");   
+                                Template.Add(Cont.ToString(), split[0].Trim());
+                                Cont += 1;
                             }
                         }
                         break;
@@ -217,7 +219,7 @@ namespace VBot
         /// <param name="Text">Wiki text</param>
         /// <param name="Section">Section to find with level (ex. == External link ==)</param>
         /// <returns>Position</returns>
-        public int SectionStart(string Text, string Section)
+        public static int SectionStart(string Text, string Section)
         {
             Regex regex = new Regex(@"==\s*" + Section + @"\s*==", RegexOptions.IgnoreCase);
             Match match = regex.Match(Text);
@@ -230,7 +232,7 @@ namespace VBot
         /// <param name="Title">Title</param>
         /// <param name="Disambig">Must be , or ()</param>
         /// <returns>Title without disambiguation</returns>
-        public string DelDisambiguation(string Title, string Disambig)
+        public static string DelDisambiguation(string Title, string Disambig)
         {
             if (Disambig == "()")
             {
@@ -255,6 +257,35 @@ namespace VBot
                 }
             }
             return Title;
+        }
+
+        /// <summary>
+        /// To create chunk with max number of chunk string
+        /// </summary>
+        /// <param name="Text">list of item separated by |</param>
+        /// <param name="Chunk">Max dimension of chunk</param>
+        /// <returns>List of item</returns>
+        public static List<string> SplitInChunk(string Text, int Chunk)
+        {
+            int cont = 0;
+            List<string> chunks = new List<string>();
+
+            string[] tmp1 = Text.Split('|');
+            String tmp = "";
+            foreach (string s in tmp1)
+            {
+                cont += 1;
+                tmp += s + "|";
+                if (cont == Chunk)
+                {
+                    cont = 0;
+                    tmp = tmp.Remove(tmp.LastIndexOf("|"));
+                    chunks.Add(tmp);
+                    tmp = "";
+                }
+            }
+            tmp = tmp.Remove(tmp.LastIndexOf("|"));
+            return chunks;
         }
     }        
 }

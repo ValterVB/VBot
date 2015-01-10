@@ -30,27 +30,27 @@ namespace VBot
         [OnDeserialized]
         public void OnDeserialized(StreamingContext context)
         {
-            if (this.entities !=null)
+            if (this.entities != null)
             {
-            foreach (KeyValuePair<string, Entity> tmp in this.entities)
-            {
-                if (tmp.Key!=tmp.Value.id)
+                foreach (KeyValuePair<string, Entity> tmp in this.entities)
                 {
-                    tmp.Value.IsRedirect = true;
-                    tmp.Value.RedirectFrom = tmp.Key;
-                }
-                else
-                {
-                    tmp.Value.IsRedirect = false;
-                    tmp.Value.RedirectFrom = "";
+                    if (tmp.Key != tmp.Value.id)
+                    {
+                        tmp.Value.IsRedirect = true;
+                        tmp.Value.RedirectFrom = tmp.Key;
+                    }
+                    else
+                    {
+                        tmp.Value.IsRedirect = false;
+                        tmp.Value.RedirectFrom = "";
+                    }
                 }
             }
-        }
         }
     }
 
     /// <summary>
-    /// Main class for dump entities
+    /// Main class for entity
     /// </summary>
     /// <see cref="https://www.mediawiki.org/wiki/Wikibase/DataModel/Primer"/>
     public class Entity
@@ -79,11 +79,41 @@ namespace VBot
         /// <returns></returns>
         public bool PropertyExist(string Property)
         {
-            foreach (KeyValuePair<string, List<Claim>> claim in this.claims)
+            if (this.claims != null)
             {
-                if (claim.Key==Property)
+                foreach (KeyValuePair<string, List<Claim>> claim in this.claims)
                 {
-                    return true;
+                    if (claim.Key == Property)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Return true if property with value
+        /// </summary>
+        /// <param name="Property">property to check (ex P123)</param>
+        /// <param name="dv">value to check</param>
+        /// <returns></returns>
+        public bool PropertyValueExist(string Property, Datavalue dv)
+        {
+            List<Datavalue> tmpList = new List<Datavalue>();
+            if (this.claims != null)
+            {
+                foreach (KeyValuePair<string, List<Claim>> tmpClaims in this.claims)
+                {
+                    if (tmpClaims.Key == Property)
+                    {
+                        List<Claim> tmpListClaim = tmpClaims.Value;
+                        foreach (Claim tmpClaim in tmpListClaim)
+                        {
+                            if (tmpClaim.mainsnak.datavalue.FormatValue == dv.FormatValue)
+                                return true;
+                        }
+                    }
                 }
             }
             return false;
@@ -96,7 +126,7 @@ namespace VBot
         /// <returns>list of datavalue</returns>
         public List<Datavalue> PropertyValue(string Property)
         {
-            List<Datavalue> tmpList=new List<Datavalue>();
+            List<Datavalue> tmpList = new List<Datavalue>();
             if (this.claims != null)
             {
                 foreach (KeyValuePair<string, List<Claim>> tmpClaims in this.claims)
@@ -120,9 +150,9 @@ namespace VBot
         public string language { get; set; }
         public string value { get; set; }
     }
-    public class Labels:Language { }
-    public class Descriptions:Language { }
-    public class Aliases:Language { }
+    public class Labels : Language { }
+    public class Descriptions : Language { }
+    public class Aliases : Language { }
     public class Claim
     {
         public string id { get; set; }
@@ -154,7 +184,7 @@ namespace VBot
         public string property { get; set; }
         public string datatype { get; set; }
         public Datavalue datavalue { get; set; }
-        public Mainsnak() { datavalue=new Datavalue(); }
+        public Mainsnak() { datavalue = new Datavalue(); }
     }
     public class Qualifier
     {
@@ -227,9 +257,9 @@ namespace VBot
                 string tmp = "{\"value\":";
                 tmp += "\"" + value + "\",";
                 tmp += "\"type\":\"string\"}},";
-                _Json= tmp;
+                _Json = tmp;
                 return _Json;
-            }   
+            }
         }
         public override string FormatValue
         {
@@ -376,7 +406,7 @@ namespace VBot
     {
         [JsonProperty("entity-type")]
         public string entity_type { get; set; }
-        [JsonProperty("numeric-id")] 
+        [JsonProperty("numeric-id")]
         public int numeric_id { get; set; }
     }
     public class ValueCoordinate
@@ -440,7 +470,7 @@ namespace VBot
                 case "monolingualtext":
                     datavalue = new DatavalueQuantity();
                     break;
-                default :
+                default:
                     datavalue = null;
                     break;
             }

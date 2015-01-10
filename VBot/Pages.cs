@@ -23,7 +23,10 @@ namespace VBot
         {
             foreach (KeyValuePair<int, Page> page in this.pages)
             {
-                FirstPageText = page.Value.revisions[0].text;
+                if (page.Value.missing == null)
+                {
+                    this.FirstPageText = page.Value.revisions[0].text;
+                }
                 break;
             }
         }
@@ -36,6 +39,7 @@ namespace VBot
         public string title { get; set; }
         public List<Revision> revisions { get; set; }
         public Pageprops pageprops { get; set; }
+        public string missing { get; set; }
 
         public bool IsRedirect()
         {

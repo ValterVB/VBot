@@ -15,7 +15,8 @@ namespace VBot
         public enum ReturnType
         {
             Page,
-            Item
+            Item,
+            Other
         };
 
         private string Version = "VBot ver." + Assembly.GetExecutingAssembly().GetName().Version.ToString();
@@ -205,60 +206,67 @@ namespace VBot
             data.Close();
             reader.Close();
 
-            string tmp = "";
-            foreach (string strline in result.Split('\n'))
+            if (result.IndexOf("* Query yielded 0 pages") == -1)
             {
-                if (strline.IndexOf("|[[") == 0)
+                string tmp = "";
+                foreach (string strline in result.Split('\n'))
                 {
-                    string[] line = strline.Split(new[] { "||" }, StringSplitOptions.None);
-                    string Title = line[0].Split('|')[1].Replace("[[", "").Trim();
-                    string Cat = line[5].Split('|')[0].Replace("[[", "").Replace(":Category:", "").Trim();
-                    string Item = line[6].Split('|')[0].Replace("[[", "").Replace("d:", "").Trim();
+                    if (strline.IndexOf("|[[") == 0)
+                    {
+                        string[] line = strline.Split(new[] { "||" }, StringSplitOptions.None);
+                        string Title = line[0].Split('|')[1].Replace("[[", "").Trim();
+                        string Cat = line[5].Split('|')[0].Replace("[[", "").Replace(":Category:", "").Trim();
+                        string Item = line[6].Split('|')[0].Replace("[[", "").Replace("d:", "").Trim();
 
-                    if (Return == ReturnType.Item && Item != "")
-                    {
-                        tmp += Item + "|";
-                    }
-                    else if (Return == ReturnType.Page)
-                    {
-                        tmp += Title + "|";
-                    }
-                    else
-                    {
-                        tmp += Title + "\t" + Cat + "\t" + Item + Environment.NewLine;
+                        if (Return == ReturnType.Item && Item != "")
+                        {
+                            tmp += Item + "|";
+                        }
+                        else if (Return == ReturnType.Page)
+                        {
+                            tmp += Title + "|";
+                        }
+                        else
+                        {
+                            tmp += Title + "\t" + Cat + "\t" + Item + Environment.NewLine;
+                        }
                     }
                 }
-            }
-            if (Return == ReturnType.Item || Return == ReturnType.Page)
-            {
-                tmp = tmp.Remove(tmp.LastIndexOf("|"));
-            }
-
-            // Split in chunk
-            List<string> chunks=new List<string>();
-            if (Chunk != 0 && (Return == ReturnType.Item || Return == ReturnType.Page))
-            {
-                int cont = 0;
-                string[] tmp1 = tmp.Split('|');
-                tmp = "";
-                foreach (string s in tmp1)
+                if (Return == ReturnType.Item || Return == ReturnType.Page)
                 {
-                    cont += 1;
-                    tmp += s + "|";
-                    if (cont==Chunk)
+                    tmp = tmp.Remove(tmp.LastIndexOf("|"));
+                }
+
+                // Split in chunk
+                List<string> chunks = new List<string>();
+                if (Chunk != 0 && (Return == ReturnType.Item || Return == ReturnType.Page))
+                {
+                    int cont = 0;
+                    string[] tmp1 = tmp.Split('|');
+                    tmp = "";
+                    foreach (string s in tmp1)
                     {
-                        cont = 0;
-                        tmp = tmp.Remove(tmp.LastIndexOf("|"));
-                        chunks.Add(tmp);
-                        tmp = "";
+                        cont += 1;
+                        tmp += s + "|";
+                        if (cont == Chunk)
+                        {
+                            cont = 0;
+                            tmp = tmp.Remove(tmp.LastIndexOf("|"));
+                            chunks.Add(tmp);
+                            tmp = "";
+                        }
                     }
                 }
+                else
+                {
+                    chunks.Add(tmp);
+                }
+                return chunks;
             }
             else
             {
-                chunks.Add(tmp);
+                return null;
             }
-            return chunks;
         }
 
         /// <summary>
