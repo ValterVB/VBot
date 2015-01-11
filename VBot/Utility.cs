@@ -284,7 +284,6 @@ namespace VBot
                     tmp = "";
                 }
             }
-            tmp = tmp.Remove(tmp.LastIndexOf("|"));
             return chunks;
         }
     }        
