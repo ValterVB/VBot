@@ -402,7 +402,7 @@ namespace VBot
         private void ReadDumpExample()
         {
             string line;
-            System.IO.StreamReader file = new System.IO.StreamReader(@"D:\Wikipedia\Dump\w020n90.tar.gz", Encoding.UTF8);
+            System.IO.StreamReader file = new System.IO.StreamReader(@"D:\Wikipedia\Dump\20150427.json", Encoding.UTF8);
             line = file.ReadLine(); // first line is "["
             EntitiesDump item = new EntitiesDump();
             txtPageList.Text = "";
