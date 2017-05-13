@@ -4,7 +4,7 @@ Language C#
 
 License: CC0 1.0
 
-BOT for Wikidata and Wikipedia. Read and write on Wikidata and Wipipedia and have a useful list generator to generate list of Wikipedia page and Wikidata entity.
+BOT for Wikidata and Wikipedia. Read and write on Wikidata and Wikipedia and have a useful list generator to generate list of Wikipedia page and Wikidata entity.
 
 Tested with Visual Studio Express 2013 for Windows Desktop. 
 
