@@ -62,12 +62,11 @@ namespace VBot
         /// <see cref="https://www.mediawiki.org/wiki/API:Tokens"/>
         private void Login()
         {
-                                                          
-            string strToken = PostRequest(this._URL + this._API + "?action=login&lgname=" + HttpUtility.UrlEncode(this._User) + "&lgpassword=" + HttpUtility.UrlEncode(this._Password) + "&format=xml", "", true);
+            string strToken = PostRequest(this._URL + this._API + "?action=login", "lgname=" + HttpUtility.UrlEncode(this._User) + "&lgpassword=" + HttpUtility.UrlEncode(this._Password) + "&format=xml", true); 
             int Da = strToken.IndexOf("token=") + 7;
             int A = strToken.IndexOf("\"", Da);
             strToken = strToken.Substring(Da, A - Da);
-            strToken = PostRequest(this._URL + this._API + "?action=login&lgname=" + HttpUtility.UrlEncode(this._User) + "&lgpassword=" + HttpUtility.UrlEncode(this._Password) + "&format=xml" + "&lgtoken=" + HttpUtility.UrlEncode(strToken), "", true);
+            strToken = PostRequest(this._URL + this._API + "?action=login", "lgname=" + HttpUtility.UrlEncode(this._User) + "&lgpassword=" + HttpUtility.UrlEncode(this._Password) + "&format=xml" + "&lgtoken=" + HttpUtility.UrlEncode(strToken), true); 
             if (strToken.IndexOf("login result=\"Success\"") == -1)
             {
                 this._User = "";
